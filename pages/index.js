@@ -1,11 +1,39 @@
-import Head from 'next/head'
-import Image from 'next/image'
-import { Inter } from 'next/font/google'
-import styles from '@/styles/Home.module.css'
+"use client";
 
-const inter = Inter({ subsets: ['latin'] })
+import Head from "next/head";
+import Image from "next/image";
+import { Inter } from "next/font/google";
+import styles from "@/styles/Home.module.css";
+import { getWebInstrumentations, initializeFaro } from "@grafana/faro-web-sdk";
+import { TracingInstrumentation } from "@grafana/faro-web-tracing";
+import { useEffect } from "react";
+
+const inter = Inter({ subsets: ["latin"] });
 
 export default function Home() {
+  useEffect(() => {
+    console.log(process.env.NEXT_PUBLIC_API_KEY)
+    const faro = initializeFaro({
+      url: `https://faro-collector-prod-sa-east-0.grafana.net/collect/${process.env.NEXT_PUBLIC_API_KEY}`,
+      app: {
+        name: "test",
+        version: "1.0.0",
+        environment: "production",
+      },
+      instrumentations: [
+        // Mandatory, overwriting the instrumentations array would cause the default instrumentations to be omitted
+        ...getWebInstrumentations(),
+
+        // Initialization of the tracing package.
+        // This packages is optional because it increases the bundle size noticeably. Only add it if you want tracing data.
+        new TracingInstrumentation(),
+      ],
+    });
+    if (faro)
+      faro.api.pushLog(['hello world']);
+  }, []);
+  console.info("hello world");
+
   return (
     <>
       <Head>
@@ -26,7 +54,7 @@ export default function Home() {
               target="_blank"
               rel="noopener noreferrer"
             >
-              By{' '}
+              By{" "}
               <Image
                 src="/vercel.svg"
                 alt="Vercel Logo"
@@ -110,5 +138,5 @@ export default function Home() {
         </div>
       </main>
     </>
-  )
+  );
 }
