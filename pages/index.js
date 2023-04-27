@@ -15,7 +15,7 @@ export default function Home() {
     initializeFaro({
       isolate: true,
       
-      url: `https://faro-collector-prod-sa-east-0.grafana.net/collect/${process.env.NEXT_PUBLIC_API_KEY}}`,
+      url: `https://faro-collector-prod-sa-east-0.grafana.net/collect/${process.env.NEXT_PUBLIC_API_KEY}`,
       app: {
         name: "test",
         version: "1.0.0",
